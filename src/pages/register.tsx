@@ -1,10 +1,11 @@
 import { Steps } from "antd";
 import { useState } from "react";
-import PersonalInformation from "../components/personal-information.tsx";
+import PersonalInformation from "../components/personal-information";
 import AddressInformation from "../components/address-information/index.tsx";
+import AccountInformation from "../components/account-information/index.tsx";
 
 const Register = () => {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0);
 
   const steps = [
     "Personal Information",
@@ -40,13 +41,15 @@ const Register = () => {
         <Steps direction="vertical" current={currentStep} items={items} />
       </section>
 
-      <section className="w-2/3 pl-10">
+      <div className="w-2/3 pl-10">
         {currentStep === 0 && <PersonalInformation onNext={onNext} />}
 
         {currentStep === 1 && (
           <AddressInformation onPrevious={onPrev} onNext={onNext} />
         )}
-      </section>
+
+        {currentStep === 2 && <AccountInformation onPrevious={onPrev} />}
+      </div>
     </>
   );
 };

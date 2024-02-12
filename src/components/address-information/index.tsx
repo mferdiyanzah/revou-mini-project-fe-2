@@ -1,19 +1,42 @@
 import { Form, Input, Row, Select } from "antd";
 import { dummyStateCityZip } from "./address-information.dummy";
-import { AddressInformationProps } from "./address-information.interface";
+import {
+  AddressInformationProps,
+  IAddressInformationForm,
+  IStateData,
+} from "./address-information.interface";
 import { useEffect, useState } from "react";
 
 const AddressInformation = ({
   onPrevious,
   onNext,
 }: AddressInformationProps) => {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<IAddressInformationForm>();
   const formValues = Form.useWatch([], form);
-  const [selectedCityState, setSelectedCityState] = useState({
-    city: -1,
-    state: -1,
-  });
+  const [selectedCity, setSelectedCity] = useState<number>(-1);
+  const [selectedStates, setSelectedStates] = useState<IStateData[]>();
+  const [selectedZip, setSelectedZip] = useState<string[]>();
   const [isNextBtnDisabled, setIsNextBtnDisabled] = useState(true);
+
+  useEffect(() => {
+    const localValues = JSON.parse(
+      localStorage.getItem("addressInformation") as string
+    );
+    if (!localValues) return;
+
+    setSelectedCity(Number(localValues.city));
+    setSelectedStates(
+      dummyStateCityZip[Number(localValues.city)].cities as IStateData[]
+    );
+    setSelectedZip(
+      dummyStateCityZip[Number(localValues.city)].cities[
+        Number(localValues.state)
+      ].zip
+    );
+
+    form.setFieldsValue(localValues);
+  }, []);
+
 
   useEffect(() => {
     form
@@ -24,22 +47,48 @@ const AddressInformation = ({
       .catch(() => {
         setIsNextBtnDisabled(true);
       });
+    
+    const formValues = form.getFieldsValue();
+
+    if (formValues.city) {
+      setSelectedCity(Number(formValues.city));
+      setSelectedStates(
+        dummyStateCityZip[Number(formValues.city)].cities as IStateData[]
+      );
+    }
+
+    if (formValues.state) {
+      setSelectedZip(
+        dummyStateCityZip[Number(formValues.city)].cities[
+          Number(formValues.state)
+        ].zip
+      );
+    }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);
 
   const onClickNext = () => {
     const values = form.getFieldsValue();
+
     localStorage.setItem("addressInformation", JSON.stringify(values));
     onNext();
   };
 
   const cityOptions = dummyStateCityZip.map((item, idx) => ({
     label: item.name,
-    value: idx,
+    value: String(idx),
   }));
 
   return (
-    <Form layout="vertical" form={form} size="large" autoCorrect="off">
+    <Form
+      layout="vertical"
+      form={form}
+      className="w-full"
+      size="large"
+      autoCorrect="off"
+      autoComplete="off"
+    >
       <Form.Item
         label="Street Address"
         name="address"
@@ -53,7 +102,6 @@ const AddressInformation = ({
           showSearch
           placeholder="Select your city"
           options={cityOptions}
-          onChange={(value) => setSelectedCityState({ city: value, state: -1 })}
         />
       </Form.Item>
 
@@ -61,34 +109,27 @@ const AddressInformation = ({
         <Select
           showSearch
           placeholder="Select your state"
-          options={dummyStateCityZip[selectedCityState.city]?.cities.map(
-            (item, idx) => ({
-              label: item.name,
-              value: idx,
-            })
-          )}
-          onChange={(value) =>
-            setSelectedCityState({ ...selectedCityState, state: value })
-          }
-          disabled={selectedCityState.city === -1}
+          options={selectedStates?.map((item, idx) => ({
+            label: item.name,
+            value: String(idx),
+          }))}
+          disabled={selectedCity === -1}
         />
       </Form.Item>
+
 
       <Form.Item label="ZIP Code" name="zip" rules={[{ required: true }]}>
         <Select
           showSearch
           placeholder="Select your zip code"
-          options={dummyStateCityZip[selectedCityState.city]?.cities[
-            selectedCityState.state
-          ]?.zip.map((item, idx) => ({
+          options={selectedZip?.map((item, idx) => ({
             label: item,
-            value: idx,
+            value: String(idx),
           }))}
-          disabled={
-            selectedCityState.city === -1 || selectedCityState.state === -1
-          }
+          disabled={selectedStates === undefined || selectedZip === undefined}
         />
       </Form.Item>
+
 
       <Row justify="space-between">
         <button

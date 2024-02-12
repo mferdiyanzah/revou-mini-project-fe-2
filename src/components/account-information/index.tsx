@@ -45,7 +45,13 @@ const AccountInformation = ({ onPrevious }: AccountInformationProps) => {
   };
 
   return (
-    <Form layout="vertical" autoComplete="off" size="large" form={form}>
+    <Form
+      layout="vertical"
+      className="w-full"
+      autoComplete="off"
+      size="large"
+      form={form}
+    >
       <Form.Item label="Username" name="username" required>
         <Input placeholder="Enter your username" />
       </Form.Item>

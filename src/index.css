@@ -21,3 +21,12 @@ label {
   font-size: 1.1em !important;
   margin-bottom: 0.5em;
 }
+
+.ant-col.ant-form-item-label {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.ant-col.ant-form-item-label label {
+  height: auto;
+}

@@ -17,6 +17,20 @@ const PersonalInformation = ({ onNext }: PersonalInformationProps) => {
   const [isBtnDisabled, setIsBtnDisabled] = useState(true);
 
   useEffect(() => {
+    const localValues = JSON.parse(
+      localStorage.getItem("personalInformation") as string
+    );
+    console.log(localValues);
+    if (!localValues) return;
+    const initValues = {
+      ...localValues,
+      dob: dayjs(localValues.dob),
+    };
+    form.setFieldsValue(initValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     form
       .validateFields({ validateOnly: true })
       .then((currentValues) => {
@@ -36,16 +50,22 @@ const PersonalInformation = ({ onNext }: PersonalInformationProps) => {
   };
 
   return (
-    <Form layout="vertical" form={form} autoComplete="off" size="large">
-      <Form.Item label="Full Name" name="fullName" required {...fullNameConfig}>
+    <Form
+      className="w-full"
+      layout="vertical"
+      form={form}
+      autoComplete="off"
+      size="large"
+    >
+      <Form.Item label="Full Name" name="fullName" {...fullNameConfig}>
         <Input placeholder="Enter your full name" />
       </Form.Item>
 
-      <Form.Item label="Email" name="email" required {...emailConfig}>
+      <Form.Item label="Email" name="email" {...emailConfig}>
         <Input placeholder="Enter your email" />
       </Form.Item>
 
-      <Form.Item label="Date of Birth" name="dob" required {...dateConfig}>
+      <Form.Item label="Date of Birth" name="dob" {...dateConfig}>
         <DatePicker
           placeholder="Select your date of birth"
           format={"DD MMMM YYYY"}

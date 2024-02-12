@@ -1,4 +1,4 @@
-import { Steps } from "antd";
+import { Col, Row, Steps } from "antd";
 import { useState } from "react";
 import PersonalInformation from "../components/personal-information";
 import AddressInformation from "../components/address-information/index.tsx";
@@ -27,8 +27,12 @@ const Register = () => {
   };
 
   return (
-    <>
-      <section className="w-1/3 pr-4 gap-4 border-r border-gray-400 h-4/6 grid grid-rows-2">
+    <Row className="lg:h-[60vh] h-screen">
+      <Col
+        sm={{ flex: "100%" }}
+        lg={{ flex: "30%" }}
+        className="pr-4 gap-4 lg:border-r border-gray-400 grid grid-rows-2"
+      >
         <div className="flex justify-center flex-col">
           <h1 className="text-6xl font-bold m-0 text-blue-900">SINAU</h1>
           <h3 className="mb-4 text-xl">Register</h3>
@@ -39,9 +43,13 @@ const Register = () => {
         </div>
 
         <Steps direction="vertical" current={currentStep} items={items} />
-      </section>
+      </Col>
 
-      <div className="w-2/3 pl-10">
+      <Col
+        lg={{ flex: "70%" }}
+        sm={{ flex: "100%" }}
+        className="w-full lg:pl-10 flex lg:items-center"
+      >
         {currentStep === 0 && <PersonalInformation onNext={onNext} />}
 
         {currentStep === 1 && (
@@ -49,8 +57,8 @@ const Register = () => {
         )}
 
         {currentStep === 2 && <AccountInformation onPrevious={onPrev} />}
-      </div>
-    </>
+      </Col>
+    </Row>
   );
 };
 

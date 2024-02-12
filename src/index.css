@@ -16,16 +16,6 @@ body {
   font-family: "Open Sans", sans-serif;
 }
 
-.ant-input,
-.ant-picker-input > input,
-.ant-picker-suffix {
-  padding: 1em !important;
-}
-
-.ant-picker {
-  padding: 0 !important;
-}
-
 label {
   font-weight: 600;
   font-size: 1.1em !important;

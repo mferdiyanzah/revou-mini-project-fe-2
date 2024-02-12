@@ -7,7 +7,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <ConfigProvider
     theme={{
       token: {
-        // Seed Token
         colorPrimary: "#002c8c",
         borderRadius: 4,
       },

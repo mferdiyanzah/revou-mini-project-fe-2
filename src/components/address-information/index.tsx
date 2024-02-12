@@ -64,6 +64,9 @@ const AddressInformation = ({
         ].zip
       );
     }
+
+    const values = form.getFieldsValue();
+    localStorage.setItem("addressInformation", JSON.stringify(values));
     
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);

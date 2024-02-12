@@ -1,4 +1,4 @@
-import { Form, Input, Row } from "antd";
+import { Form, Input, Modal, Row } from "antd";
 import { AccountInformationProps } from "./account-information.interface";
 import { useEffect, useState } from "react";
 
@@ -6,6 +6,15 @@ const AccountInformation = ({ onPrevious }: AccountInformationProps) => {
   const [form] = Form.useForm();
   const formValues = Form.useWatch([], form);
   const [isBtnDisabled, setIsBtnDisabled] = useState(true);
+
+  useEffect(() => {
+    const localValues = JSON.parse(
+      localStorage.getItem("accountInformation") as string
+    );
+    if (!localValues) return;
+
+    form.setFieldsValue(localValues);
+  }, []);
 
   useEffect(() => {
     form
@@ -16,6 +25,10 @@ const AccountInformation = ({ onPrevious }: AccountInformationProps) => {
       .catch(() => {
         setIsBtnDisabled(true);
       });
+    
+    const values = form.getFieldsValue();
+    
+    localStorage.setItem("accountInformation", JSON.stringify(values));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);
 
@@ -43,6 +56,20 @@ const AccountInformation = ({ onPrevious }: AccountInformationProps) => {
       },
     ],
   };
+
+  const onClickFinish = () => {
+    const values = form.getFieldsValue();
+    
+    localStorage.setItem("accountInformation", JSON.stringify(values));
+    Modal.success({
+      title: "Success",
+      content: `Your account has been created! Hi, ${values.username}!`,
+      onOk: () => {
+        localStorage.clear();
+        window.location.reload();
+      },
+    });
+  }
 
   return (
     <Form
@@ -96,6 +123,7 @@ const AccountInformation = ({ onPrevious }: AccountInformationProps) => {
           className={` px-5 py-2 text-white rounded-md text-sm ${
             isBtnDisabled ? "cursor-not-allowed bg-gray-200" : "bg-blue-900"
           }`}
+          onClick={onClickFinish}
           disabled={isBtnDisabled}
         >
           Finish

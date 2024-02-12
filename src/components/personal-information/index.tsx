@@ -20,7 +20,6 @@ const PersonalInformation = ({ onNext }: PersonalInformationProps) => {
     const localValues = JSON.parse(
       localStorage.getItem("personalInformation") as string
     );
-    console.log(localValues);
     if (!localValues) return;
     const initValues = {
       ...localValues,
@@ -39,6 +38,10 @@ const PersonalInformation = ({ onNext }: PersonalInformationProps) => {
       .catch(() => {
         setIsBtnDisabled(true);
       });
+    
+    const values = form.getFieldsValue();
+    localStorage.setItem("personalInformation", JSON.stringify(values));
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);
 

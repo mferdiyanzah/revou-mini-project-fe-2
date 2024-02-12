@@ -9,7 +9,7 @@ import {
   emailConfig,
   fullNameConfig,
 } from "./personal-information.config";
-import dayjs from "dayjs";
+import * as dayjs from "dayjs";
 
 const PersonalInformation = ({ onNext }: PersonalInformationProps) => {
   const [form] = Form.useForm<IPersonalInformationForm>();
@@ -38,14 +38,15 @@ const PersonalInformation = ({ onNext }: PersonalInformationProps) => {
       .catch(() => {
         setIsBtnDisabled(true);
       });
-    
+
     const values = form.getFieldsValue();
     localStorage.setItem("personalInformation", JSON.stringify(values));
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);
 
   const onClickNext = () => {
+    console.log("testtttttt");
     const values = form.getFieldsValue();
     values.dob = dayjs(values.dob).format("DD MMMM YYYY");
     localStorage.setItem("personalInformation", JSON.stringify(values));

@@ -37,7 +37,6 @@ const AddressInformation = ({
     form.setFieldsValue(localValues);
   }, []);
 
-
   useEffect(() => {
     form
       .validateFields({ validateOnly: true })
@@ -47,7 +46,7 @@ const AddressInformation = ({
       .catch(() => {
         setIsNextBtnDisabled(true);
       });
-    
+
     const formValues = form.getFieldsValue();
 
     if (formValues.city) {
@@ -64,17 +63,25 @@ const AddressInformation = ({
         ].zip
       );
     }
+    saveToLocalStorage();
 
-    const values = form.getFieldsValue();
-    localStorage.setItem("addressInformation", JSON.stringify(values));
-    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);
 
-  const onClickNext = () => {
+  const saveToLocalStorage = () => {
     const values = form.getFieldsValue();
+    const jsonValues = JSON.stringify(values, (_, value) => {
+      if (value === undefined) {
+        return "";
+      }
+      return value;
+    });
 
-    localStorage.setItem("addressInformation", JSON.stringify(values));
+    localStorage.setItem("addressInformation", jsonValues);
+  };
+
+  const onClickNext = () => {
+    saveToLocalStorage();
     onNext();
   };
 
@@ -120,7 +127,6 @@ const AddressInformation = ({
         />
       </Form.Item>
 
-
       <Form.Item label="ZIP Code" name="zip" rules={[{ required: true }]}>
         <Select
           showSearch
@@ -132,7 +138,6 @@ const AddressInformation = ({
           disabled={selectedStates === undefined || selectedZip === undefined}
         />
       </Form.Item>
-
 
       <Row justify="space-between">
         <button

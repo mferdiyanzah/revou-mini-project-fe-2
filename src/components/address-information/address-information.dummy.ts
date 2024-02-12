@@ -3,11 +3,11 @@ export const dummyStateCityZip = [
     name: "New York",
     cities: [
       {
-        name: "New York",
+        name: "Buffalo",
         zip: ["10001", "10002", "10003", "10004", "10005"],
       },
       {
-        name: "Buffalo",
+        name: "New York",
         zip: ["14201", "14202", "14203", "14204", "14205"],
       },
       {

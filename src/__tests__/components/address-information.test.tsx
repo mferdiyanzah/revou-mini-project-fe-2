@@ -1,9 +1,18 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import AddressInformation from "../../components/address-information";
 
+const mockFormData = {};
 describe("AddressInformation", () => {
+  const setFormData = jest.fn();
   test("renders the form correctly", () => {
-    render(<AddressInformation onPrevious={() => {}} onNext={() => {}} />);
+    render(
+      <AddressInformation
+        formData={mockFormData}
+        setFormData={setFormData}
+        onPrevious={() => {}}
+        onNext={() => {}}
+      />
+    );
 
     // Assert that the form inputs are rendered
     expect(screen.getByLabelText("Street Address")).toBeInTheDocument();
@@ -17,7 +26,14 @@ describe("AddressInformation", () => {
   });
 
   test("disables the Next button when form is empty", () => {
-    render(<AddressInformation onPrevious={() => {}} onNext={() => {}} />);
+    render(
+      <AddressInformation
+        formData={mockFormData}
+        setFormData={setFormData}
+        onPrevious={() => {}}
+        onNext={() => {}}
+      />
+    );
 
     // Assert that the Next button is initially disabled
     expect(screen.getByText("Next")).toBeDisabled();
@@ -27,7 +43,12 @@ describe("AddressInformation", () => {
     const onPreviousMock = jest.fn();
     const onNextMock = jest.fn();
     render(
-      <AddressInformation onPrevious={onPreviousMock} onNext={onNextMock} />
+      <AddressInformation
+        formData={mockFormData}
+        setFormData={setFormData}
+        onPrevious={onPreviousMock}
+        onNext={onNextMock}
+      />
     );
 
     // Fill in the form inputs
@@ -66,7 +87,12 @@ describe("AddressInformation", () => {
   test("calls the onPrevious function when Previous button is clicked", () => {
     const onPreviousMock = jest.fn();
     render(
-      <AddressInformation onPrevious={onPreviousMock} onNext={() => {}} />
+      <AddressInformation
+        formData={mockFormData}
+        setFormData={setFormData}
+        onPrevious={onPreviousMock}
+        onNext={() => {}}
+      />
     );
 
     screen.getByText("Previous").click();

@@ -1,5 +1,5 @@
 import { DatePicker, Form, Input, Row } from "antd";
-import dayjs from "dayjs";
+import * as dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { emailConfig, fullNameConfig } from "./personal-information.config";
 import {

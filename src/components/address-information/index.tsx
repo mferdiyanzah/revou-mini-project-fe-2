@@ -1,5 +1,4 @@
-import { Form, Row, Select } from "antd";
-import TextArea from "antd/es/input/TextArea";
+import { Form, Input, Row, Select } from "antd";
 import { useEffect, useState } from "react";
 import { dummyStateCityZip } from "./address-information.dummy";
 import {
@@ -109,7 +108,7 @@ const AddressInformation = ({
         name="address"
         rules={[{ required: true }]}
       >
-        <TextArea maxLength={100} rows={4} showCount />
+        <Input.TextArea maxLength={100} rows={4} showCount />
       </Form.Item>
 
       <Form.Item label="City" name="city" rules={[{ required: true }]}>

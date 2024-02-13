@@ -2,18 +2,28 @@ import { Form, Input, Modal, Row } from "antd";
 import { AccountInformationProps } from "./account-information.interface";
 import { useEffect, useState } from "react";
 
-const AccountInformation = ({ onPrevious }: AccountInformationProps) => {
+const AccountInformation = ({
+  onPrevious,
+  formData,
+  setFormData,
+}: AccountInformationProps) => {
   const [form] = Form.useForm();
   const formValues = Form.useWatch([], form);
   const [isBtnDisabled, setIsBtnDisabled] = useState(true);
 
   useEffect(() => {
-    const localValues = JSON.parse(
-      localStorage.getItem("accountInformation") as string
-    );
-    if (!localValues) return;
+    const isFormDataExist =
+      formData?.username !== undefined || formData?.password !== undefined;
+    if (!formData || !isFormDataExist) return;
 
-    form.setFieldsValue(localValues);
+    const initValues = {
+      username: formData.username,
+      password: formData.password,
+      confirmPassword: "",
+    };
+    form.setFieldsValue(initValues);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -25,10 +35,13 @@ const AccountInformation = ({ onPrevious }: AccountInformationProps) => {
       .catch(() => {
         setIsBtnDisabled(true);
       });
-    
+
     const values = form.getFieldsValue();
-    
-    localStorage.setItem("accountInformation", JSON.stringify(values));
+
+    setFormData({
+      ...formData,
+      ...values,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);
 
@@ -59,9 +72,11 @@ const AccountInformation = ({ onPrevious }: AccountInformationProps) => {
 
   const onClickFinish = () => {
     const values = form.getFieldsValue();
-    
-    localStorage.setItem("accountInformation", JSON.stringify(values));
-    Modal.success({
+    setFormData({ ...formData, ...values });
+
+    const registerData = JSON.stringify(formData);
+    localStorage.setItem("registerData", registerData);
+    Modal.info({
       title: "Success",
       content: `Your account has been created! Hi, ${values.username}!`,
       onOk: () => {
@@ -69,7 +84,7 @@ const AccountInformation = ({ onPrevious }: AccountInformationProps) => {
         window.location.reload();
       },
     });
-  }
+  };
 
   return (
     <Form

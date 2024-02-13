@@ -1,15 +1,18 @@
-import { Form, Input, Row, Select } from "antd";
+import { Form, Row, Select } from "antd";
+import TextArea from "antd/es/input/TextArea";
+import { useEffect, useState } from "react";
 import { dummyStateCityZip } from "./address-information.dummy";
 import {
   AddressInformationProps,
   IAddressInformationForm,
   IStateData,
 } from "./address-information.interface";
-import { useEffect, useState } from "react";
 
 const AddressInformation = ({
   onPrevious,
   onNext,
+  formData,
+  setFormData,
 }: AddressInformationProps) => {
   const [form] = Form.useForm<IAddressInformationForm>();
   const formValues = Form.useWatch([], form);
@@ -19,22 +22,34 @@ const AddressInformation = ({
   const [isNextBtnDisabled, setIsNextBtnDisabled] = useState(true);
 
   useEffect(() => {
-    const localValues = JSON.parse(
-      localStorage.getItem("addressInformation") as string
-    );
-    if (!localValues) return;
+    const isFormDataExist =
+      formData?.address !== undefined ||
+      formData?.city !== undefined ||
+      formData?.state !== undefined ||
+      formData?.zip !== undefined;
+    if (!formData || !isFormDataExist) return;
 
-    setSelectedCity(Number(localValues.city));
-    setSelectedStates(
-      dummyStateCityZip[Number(localValues.city)].cities as IStateData[]
-    );
-    setSelectedZip(
-      dummyStateCityZip[Number(localValues.city)].cities[
-        Number(localValues.state)
-      ].zip
-    );
+    const cityState = (formData.city as number) || -1;
+    setSelectedCity(cityState);
 
-    form.setFieldsValue(localValues);
+    const savedStateOptions =
+      (dummyStateCityZip[cityState]?.cities as IStateData[]) || undefined;
+    setSelectedStates(savedStateOptions);
+
+    const savedZipOptions =
+      dummyStateCityZip[cityState]?.cities[formData.state as number]?.zip ||
+      undefined;
+    setSelectedZip(savedZipOptions);
+
+    const initValues = {
+      address: formData.address,
+      city: formData.city,
+      state: formData.state,
+      zip: formData.zip,
+    };
+    form.setFieldsValue(initValues);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -63,25 +78,15 @@ const AddressInformation = ({
         ].zip
       );
     }
-    saveToLocalStorage();
+
+    setFormData({ ...formData, ...formValues });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);
 
-  const saveToLocalStorage = () => {
-    const values = form.getFieldsValue();
-    const jsonValues = JSON.stringify(values, (_, value) => {
-      if (value === undefined) {
-        return "";
-      }
-      return value;
-    });
-
-    localStorage.setItem("addressInformation", jsonValues);
-  };
-
   const onClickNext = () => {
-    saveToLocalStorage();
+    const values = form.getFieldsValue();
+    setFormData({ ...formData, ...values });
     onNext();
   };
 
@@ -104,7 +109,7 @@ const AddressInformation = ({
         name="address"
         rules={[{ required: true }]}
       >
-        <Input placeholder="Enter your street address" />
+        <TextArea maxLength={100} rows={4} showCount />
       </Form.Item>
 
       <Form.Item label="City" name="city" rules={[{ required: true }]}>

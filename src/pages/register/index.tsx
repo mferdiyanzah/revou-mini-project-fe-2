@@ -1,11 +1,13 @@
 import { Col, Row, Steps } from "antd";
 import { useState } from "react";
-import PersonalInformation from "../components/personal-information";
-import AddressInformation from "../components/address-information/index.tsx";
-import AccountInformation from "../components/account-information/index.tsx";
+import PersonalInformation from "../../components/personal-information/index.tsx";
+import AddressInformation from "../../components/address-information/index.tsx";
+import AccountInformation from "../../components/account-information/index.tsx";
+import { IRegisterForm } from "./register.interface.ts";
 
 const Register = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [formData, setFormData] = useState<IRegisterForm>();
 
   const steps = [
     "Personal Information",
@@ -50,13 +52,30 @@ const Register = () => {
         sm={{ flex: "100%" }}
         className="w-full lg:pl-10 flex lg:items-center"
       >
-        {currentStep === 0 && <PersonalInformation onNext={onNext} />}
-
-        {currentStep === 1 && (
-          <AddressInformation onPrevious={onPrev} onNext={onNext} />
+        {currentStep === 0 && (
+          <PersonalInformation
+            formData={formData}
+            setFormData={setFormData}
+            onNext={onNext}
+          />
         )}
 
-        {currentStep === 2 && <AccountInformation onPrevious={onPrev} />}
+        {currentStep === 1 && (
+          <AddressInformation
+            onPrevious={onPrev}
+            onNext={onNext}
+            formData={formData}
+            setFormData={setFormData}
+          />
+        )}
+
+        {currentStep === 2 && (
+          <AccountInformation
+            onPrevious={onPrev}
+            formData={formData}
+            setFormData={setFormData}
+          />
+        )}
       </Col>
     </Row>
   );

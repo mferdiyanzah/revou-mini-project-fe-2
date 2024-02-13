@@ -30,3 +30,7 @@ label {
 .ant-col.ant-form-item-label label {
   height: auto;
 }
+
+textarea {
+  resize: none !important;
+}

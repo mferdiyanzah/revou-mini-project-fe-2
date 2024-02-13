@@ -1,31 +1,31 @@
 import { DatePicker, Form, Input, Row } from "antd";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { emailConfig, fullNameConfig } from "./personal-information.config";
 import {
   IPersonalInformationForm,
   PersonalInformationProps,
 } from "./personal-information.interface";
-import { useEffect, useState } from "react";
-import {
-  dateConfig,
-  emailConfig,
-  fullNameConfig,
-} from "./personal-information.config";
-import * as dayjs from "dayjs";
 
-const PersonalInformation = ({ onNext }: PersonalInformationProps) => {
+const PersonalInformation = ({
+  onNext,
+  setFormData,
+  formData,
+}: PersonalInformationProps) => {
   const [form] = Form.useForm<IPersonalInformationForm>();
   const formValues = Form.useWatch([], form);
   const [isBtnDisabled, setIsBtnDisabled] = useState(true);
 
   useEffect(() => {
-    const localValues = JSON.parse(
-      localStorage.getItem("personalInformation") as string
-    );
-    if (!localValues) return;
+    if (!formData) return;
+
     const initValues = {
-      ...localValues,
-      dob: dayjs(localValues.dob),
+      fullName: formData.fullName,
+      email: formData.email,
+      dob: formData.dob,
     };
     form.setFieldsValue(initValues);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -40,16 +40,17 @@ const PersonalInformation = ({ onNext }: PersonalInformationProps) => {
       });
 
     const values = form.getFieldsValue();
-    localStorage.setItem("personalInformation", JSON.stringify(values));
+    setFormData({
+      ...formData,
+      ...values,
+    });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues]);
 
   const onClickNext = () => {
-    console.log("testtttttt");
     const values = form.getFieldsValue();
-    values.dob = dayjs(values.dob).format("DD MMMM YYYY");
-    localStorage.setItem("personalInformation", JSON.stringify(values));
+    setFormData({ ...formData, ...values });
     onNext();
   };
 
@@ -69,12 +70,32 @@ const PersonalInformation = ({ onNext }: PersonalInformationProps) => {
         <Input placeholder="Enter your email" />
       </Form.Item>
 
-      <Form.Item label="Date of Birth" name="dob" {...dateConfig}>
+      <Form.Item
+        label="Date of Birth"
+        name="dob"
+        rules={[
+          { required: true, message: "Please select time!" },
+          () => ({
+            validator(_, value) {
+              if (value && dayjs().diff(value, "year") >= 18) {
+                return Promise.resolve();
+              }
+              return Promise.reject(
+                new Error("You must be at least 18 years old!")
+              );
+            },
+          }),
+        ]}
+      >
         <DatePicker
           placeholder="Select your date of birth"
           format={"DD MMMM YYYY"}
           allowClear
           className="w-full"
+          disabledDate={(current) => {
+            return current && current > dayjs().endOf("day");
+          }}
+          defaultPickerValue={dayjs().subtract(18, "year")}
         />
       </Form.Item>
 

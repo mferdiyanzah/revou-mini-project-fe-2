@@ -9,9 +9,9 @@ export interface AddressInformationProps {
 
 export interface IAddressInformationForm {
   address: string;
-  city: number;
-  state: number;
-  zip: number;
+  city: string;
+  state: string;
+  zip: string;
 }
 
 export interface IStateCityZip {

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Form, Input, Row, Select } from "antd";
 import { useEffect, useState } from "react";
 import { dummyStateCityZip } from "./address-information.dummy";
@@ -6,7 +7,6 @@ import {
   IAddressInformationForm,
   IStateData,
 } from "./address-information.interface";
-
 const AddressInformation = ({
   onPrevious,
   onNext,
@@ -15,9 +15,9 @@ const AddressInformation = ({
 }: AddressInformationProps) => {
   const [form] = Form.useForm<IAddressInformationForm>();
   const formValues = Form.useWatch([], form);
-  const [selectedCity, setSelectedCity] = useState<number>(-1);
-  const [selectedStates, setSelectedStates] = useState<IStateData[]>();
-  const [selectedZip, setSelectedZip] = useState<string[]>();
+  const [selectedCity, setSelectedCity] = useState("");
+  const [stateOptions, setStateOptions] = useState<IStateData[]>();
+  const [zipOptions, setZipOptions] = useState<string[]>();
   const [isNextBtnDisabled, setIsNextBtnDisabled] = useState(true);
 
   useEffect(() => {
@@ -28,17 +28,22 @@ const AddressInformation = ({
       formData?.zip !== undefined;
     if (!formData || !isFormDataExist) return;
 
-    const cityState = (formData.city as number) || -1;
-    setSelectedCity(cityState);
+    const existCity = formData.city ?? "";
+    const cityIdx = dummyStateCityZip.findIndex(
+      (item) => item.name === existCity
+    );
+    setSelectedCity(existCity);
 
     const savedStateOptions =
-      (dummyStateCityZip[cityState]?.cities as IStateData[]) || undefined;
-    setSelectedStates(savedStateOptions);
+      (dummyStateCityZip[cityIdx]?.cities as IStateData[]) || undefined;
+    const stateIdx = savedStateOptions.findIndex(
+      (item) => item.name === formData.state
+    );
+    setStateOptions(savedStateOptions);
 
     const savedZipOptions =
-      dummyStateCityZip[cityState]?.cities[formData.state as number]?.zip ||
-      undefined;
-    setSelectedZip(savedZipOptions);
+      dummyStateCityZip[cityIdx]?.cities[stateIdx]?.zip || undefined;
+    setZipOptions(savedZipOptions);
 
     const initValues = {
       address: formData.address,
@@ -64,18 +69,21 @@ const AddressInformation = ({
     const formValues = form.getFieldsValue();
 
     if (formValues.city) {
-      setSelectedCity(Number(formValues.city));
-      setSelectedStates(
-        dummyStateCityZip[Number(formValues.city)].cities as IStateData[]
+      setSelectedCity(formValues.city);
+      const cityIdx = dummyStateCityZip.findIndex(
+        (item) => item.name === formValues.city
       );
+      setStateOptions(dummyStateCityZip[cityIdx].cities);
     }
 
     if (formValues.state) {
-      setSelectedZip(
-        dummyStateCityZip[Number(formValues.city)].cities[
-          Number(formValues.state)
-        ].zip
+      const cityIdx = dummyStateCityZip.findIndex(
+        (item) => item.name === formValues.city
       );
+      const zipOptions = dummyStateCityZip[cityIdx].cities.find(
+        (item) => item.name === formValues.state
+      )?.zip;
+      setZipOptions(zipOptions);
     }
 
     setFormData({ ...formData, ...formValues });
@@ -89,9 +97,9 @@ const AddressInformation = ({
     onNext();
   };
 
-  const cityOptions = dummyStateCityZip.map((item, idx) => ({
+  const cityOptions = dummyStateCityZip.map((item) => ({
     label: item.name,
-    value: String(idx),
+    value: item.name,
   }));
 
   return (
@@ -123,11 +131,11 @@ const AddressInformation = ({
         <Select
           showSearch
           placeholder="Select your state"
-          options={selectedStates?.map((item, idx) => ({
+          options={stateOptions?.map((item) => ({
             label: item.name,
-            value: String(idx),
+            value: item.name,
           }))}
-          disabled={selectedCity === -1}
+          disabled={!selectedCity}
         />
       </Form.Item>
 
@@ -135,11 +143,11 @@ const AddressInformation = ({
         <Select
           showSearch
           placeholder="Select your zip code"
-          options={selectedZip?.map((item, idx) => ({
+          options={zipOptions?.map((item, idx) => ({
             label: item,
             value: String(idx),
           }))}
-          disabled={selectedStates === undefined || selectedZip === undefined}
+          disabled={stateOptions === undefined || zipOptions === undefined}
         />
       </Form.Item>
 

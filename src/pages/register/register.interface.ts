@@ -5,9 +5,9 @@ export interface IRegisterForm {
   email?: string;
   dob?: dayjs.Dayjs;
   address?: string;
-  city?: number;
-  state?: number;
-  zip?: number;
+  city?: string;
+  state?: string;
+  zip?: string;
   username?: string;
   password?: string;
   confirmPassword?: string;
